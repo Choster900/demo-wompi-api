@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -59,12 +61,27 @@ public class WompiController {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         String accessToken = bearerToken.startsWith("Bearer ") ? bearerToken : "Bearer " + bearerToken;
-
         headers.set("Authorization", accessToken); // Usar el token como Bearer
 
         HttpEntity<TransactionRequest> entity = new HttpEntity<>(transactionRequest, headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-        return response;
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+            // Verifica si la respuesta es exitosa
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return ResponseEntity.ok(response.getBody());
+            } else {
+                // Retornar respuesta de error de la API
+                return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
+            }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            // Manejo de errores específicos de HTTP
+            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            // Manejo de errores generales
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocurrió un error inesperado: " + e.getMessage());
+        }
     }
+
 }
