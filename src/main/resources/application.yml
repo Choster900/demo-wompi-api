@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: wompi-api
+server:
+  port: 8080
+
+wompi:
+  clientId: 3761576d-5f41-4111-b084-8a16ec2061a5
+  clientSecret: c9159ad5-aef8-4d9a-aac7-ccca5bace83b
