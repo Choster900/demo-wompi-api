@@ -19,9 +19,9 @@ public class DemoApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("http://localhost:93") // Especifica tu dominio para mayor seguridad
-						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos permitidos
-						.allowedHeaders("*") // Permite todos los headers
+						.allowedOriginPatterns("*") // Permite solicitudes desde cualquier origen con allowCredentials
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+						.allowedHeaders("*")
 						.allowCredentials(true); // Permite credenciales
 			}
 		};
